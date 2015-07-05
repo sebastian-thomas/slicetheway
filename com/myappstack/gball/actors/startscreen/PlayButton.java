@@ -32,9 +32,10 @@ public class PlayButton extends Actor{
 		int y = (int)(screenDims.y/2 - nSpriteDims.y/2);
 		spr.setPosition(x, y);
 		
-		Vector2 vPos = WorldUtils.screenToViewport(new Vector2(x,y), camera);
-		Vector2 vDims = WorldUtils.screenToViewport(nSpriteDims, camera);
-		this.setBounds(vPos.x, vPos.y, vDims.x, vDims.y);
+		//Vector2 vPos = WorldUtils.screenToViewport(new Vector2(x,y), camera);
+		//Vector2 vDims = WorldUtils.screenToViewport(nSpriteDims, camera);
+		//this.setBounds(vPos.x, vPos.y, vDims.x, vDims.y);
+		setBounds(x, y, nSpriteDims.x, nSpriteDims.y);
 	}
 	
 	public void setSize(){

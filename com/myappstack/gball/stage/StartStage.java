@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -50,15 +51,13 @@ public class StartStage extends Stage {
 		addActor(ball2);
 		addActor(playButton);
 		
-		playButton.addListener(new ChangeListener(){
+		playButton.addListener(new InputListener() {
+		    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+		        System.out.println("down");
+		        changeScreen();
+		        return true;
+		    }
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				// TODO Auto-generated method stub
-				System.out.println("Changing screen");
-				changeScreen();
-			}
-			
 		});
 	}
 	

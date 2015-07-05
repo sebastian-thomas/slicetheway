@@ -42,7 +42,7 @@ public class Food extends Actor{
 		dims = WorldUtils.viewportToScreen(new Vector2(Constants.FOOD_WIDTH, Constants.FOOD_HEIGHT),camera);
 		pos = WorldUtils.viewportToScreen(new Vector2(x,y), camera);
 		
-		Texture t = new Texture(Gdx.files.internal("yellows.png"));
+		Texture t = new Texture(Gdx.files.internal("reds.png"));
 		sprite = new Sprite(t);
 		sprite.setPosition(pos.x, pos.y);
 		sprite.setSize(dims.x, dims.y);

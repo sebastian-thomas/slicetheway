@@ -8,6 +8,8 @@ public class Constants {
     
     public static final int VIEWPORT_WIDTH = 90;
     public static final int VIEWPORT_HEIGHT = 160;
+    public static final int TOP_MARGIN = 14;
+    public static final int MARGIN=4;
     
     public static final int BALL_RADIUS = 3;
     public static final float BALL_SPEED = 2f;

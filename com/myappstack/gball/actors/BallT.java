@@ -26,11 +26,12 @@ public class BallT extends Actor {
 	private int xVal;
 	private int yVal;
 	
-	Vector2 pos;
-	Vector2 posScreen;
-	Vector2 screenDims;
+	private Vector2 pos;
+	private Vector2 posScreen;
+	private Vector2 screenDims;
 	private Vector2 direction;
 	private boolean inScreen;
+	private Vector2 margins;
 	
 	private Sprite sprite;
 	private Vector2 dims;
@@ -38,9 +39,10 @@ public class BallT extends Actor {
 	Circle bound;
 	
 	
-	public BallT(OrthographicCamera camera,Vector2 direction, int x, int y,String img){
+	public BallT(OrthographicCamera camera,Vector2 margins,Vector2 direction, int x, int y,String img){
 		this.pos = new Vector2(x,y);
 		this.camera = camera;
+		this.margins = margins;
 		this.direction = direction.nor();
 		this.inScreen = true;
 		
@@ -80,8 +82,8 @@ public class BallT extends Actor {
 		// pos.add(direction.scl(2));
 		//System.out.println(pos.toString());
 		
-		if((posScreen.x >= 0) && (posScreen.x + dims.x <= screenDims.x) &&
-				(posScreen.y >= 0) && (posScreen.y+ dims.y<= screenDims.y)){
+		if((posScreen.x >= margins.y) && (posScreen.x + dims.x <= screenDims.x - margins.y) &&
+				(posScreen.y >= margins.y) && (posScreen.y+ dims.y<= screenDims.y-margins.x)){
 			inScreen = true;
 		}
 		else{
@@ -91,28 +93,28 @@ public class BallT extends Actor {
 		
 
 		if (inScreen) {
-			if (posScreen.x <= 0) {
+			if (posScreen.x <= margins.y) {
 				// hit left edge
-				this.pos.x = 0;
+				this.pos.x = Constants.MARGIN;
 				//this.posScreen.x = 0;
 				this.direction = WorldUtils.reflect(direction,new Vector2(1, 0));
 				inScreen = false;
-			} else if (posScreen.x +dims.x >= screenDims.x) {
+			} else if (posScreen.x +dims.x >= screenDims.x - margins.y) {
 				// hit right edge
-				this.pos.x = Constants.VIEWPORT_WIDTH - 2*Constants.BALL_RADIUS;
+				this.pos.x = Constants.VIEWPORT_WIDTH  - Constants.MARGIN - 2*Constants.BALL_RADIUS;
 				//this.posScreen.x = 
 				this.direction = WorldUtils.reflect(direction, new Vector2(-1,0));
 				inScreen = false;
 			}
 
-			if (posScreen.y <= 0) {
+			if (posScreen.y <= margins.y) {
 				// hit bottom edge
-				this.pos.y = 0;
+				this.pos.y = Constants.TOP_MARGIN;
 				this.direction = WorldUtils.reflect(direction,new Vector2(0, 1));
 				inScreen = false;
-			} else if (posScreen.y + dims.y >= screenDims.y) {
+			} else if (posScreen.y + dims.y >= screenDims.y - margins.x) {
 				// hit upper edge
-				this.pos.y = Constants.VIEWPORT_HEIGHT -2* Constants.BALL_RADIUS;
+				this.pos.y = Constants.VIEWPORT_HEIGHT - Constants.TOP_MARGIN -2* Constants.BALL_RADIUS;
 				this.direction = WorldUtils.reflect(direction, new Vector2(0,-1));
 				inScreen = false;
 			}

@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.myappstack.gball.actors.Ball;
 import com.myappstack.gball.actors.BallT;
+import com.myappstack.gball.actors.BgWhiteRep;
 import com.myappstack.gball.actors.Food;
 import com.myappstack.gball.actors.Line;
 import com.myappstack.gball.utils.Constants;
@@ -27,17 +28,17 @@ public class GameStage extends Stage {
 	private static final int VIEWPORT_HEIGHT = Constants.VIEWPORT_HEIGHT;
 
 	private World world;
-	private Body wallLeft, wallRight, wallBottom, wallTop;
+	//private Body wallLeft, wallRight, wallBottom, wallTop;
 	private Vector2 touchStart;
 	private Vector2 touchEnd;
 
 	private Line line;
 	private Food food;
-	//private Ball ball;
-	//private BallT bt;
-	
 	private BallT blueBall;
 	private BallT redBall;
+	private BgWhiteRep bgWhite;
+	
+	private Vector2 margins,screenDims;
 	
 	private Integer score;
 	private Label scoreLabel;
@@ -49,8 +50,9 @@ public class GameStage extends Stage {
 	private Box2DDebugRenderer renderer;
 
 	public GameStage() {
+		setupCamera();
     	setupWorld();
-    	setupCamera();
+    	
     	setupBall();
     	setupFood(Constants.VIEWPORT_WIDTH/2,Constants.VIEWPORT_HEIGHT/2);
     	setupScore();
@@ -68,7 +70,7 @@ public class GameStage extends Stage {
 		LabelStyle style = new LabelStyle();
 		Label text;
 		style.font = font;
-		scoreLabel = new Label(score.toString(), style);
+		scoreLabel = new Label("SCORE : "+score.toString(), style);
 		scoreLabel.setText(score.toString());
 		scoreLabel.setBounds(pos.x, pos.y, dims.x, dims.y);
 
@@ -84,8 +86,8 @@ public class GameStage extends Stage {
 		//ball = new Ball(world);
 		//addActor(ball);
 		//bt = new BallT(camera, new Vector2(1,1), Constants.FOOD_WIDTH+1, Constants.FOOD_HEIGHT+1);
-		blueBall = new BallT(camera, new Vector2(1,1), Constants.FOOD_WIDTH+1, Constants.FOOD_HEIGHT+1,"blues.png");
-		redBall = new BallT(camera, new Vector2(1,-1), Constants.FOOD_WIDTH+1, Constants.VIEWPORT_HEIGHT-Constants.FOOD_HEIGHT-1,"reds.png");
+		blueBall = new BallT(camera,margins, new Vector2(1,1), Constants.FOOD_WIDTH+1, Constants.FOOD_HEIGHT+1,"b1.png");
+		redBall = new BallT(camera,margins, new Vector2(1,-1), Constants.FOOD_WIDTH+1, Constants.VIEWPORT_HEIGHT-Constants.FOOD_HEIGHT-1,"b2.png");
 		addActor(blueBall);
 		addActor(redBall);
 	}
@@ -93,6 +95,10 @@ public class GameStage extends Stage {
 
 	private void setupWorld() {
 		world = WorldUtils.createWorld();
+		margins = WorldUtils.viewportToScreen(new Vector2(Constants.TOP_MARGIN,Constants.MARGIN), camera);
+		screenDims = WorldUtils.viewportToScreen(new Vector2(Constants.VIEWPORT_WIDTH,Constants.VIEWPORT_HEIGHT), camera);
+		bgWhite = new BgWhiteRep(screenDims, margins,camera);
+		addActor(bgWhite);
 	}
 
 	private void setupCamera() {
@@ -166,16 +172,16 @@ public class GameStage extends Stage {
 					- Constants.FOOD_HEIGHT - 1);
 			food.changePos(newXpos, newYpos);
 			score++;
-			scoreLabel.setText(score.toString());
+			scoreLabel.setText("SCORE : "+score.toString());
 
 		}
 		
 		if (redBall.getBounds().overlaps(food.getBounds())) {
 			System.out.println("Collided");
-			int newXpos = MathUtils.random(1, Constants.VIEWPORT_WIDTH
-					- Constants.FOOD_WIDTH - 1);
-			int newYpos = MathUtils.random(1, Constants.VIEWPORT_HEIGHT
-					- Constants.FOOD_HEIGHT - 1);
+			int newXpos = MathUtils.random(Constants.MARGIN + 1, Constants.VIEWPORT_WIDTH
+					- Constants.FOOD_WIDTH - Constants.MARGIN - 1);
+			int newYpos = MathUtils.random(Constants.MARGIN +1, Constants.VIEWPORT_HEIGHT
+					- Constants.FOOD_HEIGHT - Constants.TOP_MARGIN - 1);
 			food.changePos(newXpos, newYpos);
 			score++;
 			scoreLabel.setText(score.toString());
