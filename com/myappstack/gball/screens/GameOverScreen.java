@@ -10,10 +10,13 @@ public class GameOverScreen implements Screen {
 	
 	MyGballGame gGame;
 	private GameOverStage goStage;
+	private int score;
 	
-	 public GameOverScreen(MyGballGame gGame) {
-		 goStage = new GameOverStage();
+	 public GameOverScreen(MyGballGame gGame,int score) {
 		 this.gGame = gGame;
+		 this.score = score;
+		 
+		 goStage = new GameOverStage(gGame,score);
 	}
 
 	@Override

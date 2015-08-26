@@ -13,7 +13,7 @@ public class GameScreen implements Screen {
     
     public GameScreen(MyGballGame gGame) {
     	this.gGame = gGame;
-        stage = new GameStage();
+        stage = new GameStage(gGame);
     }
     
 	@Override
@@ -25,7 +25,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		Gdx.gl.glClearColor(0.109f, 0.121f, 0.136f, 0.5f);
+		Gdx.gl.glClearColor(0.42f, 0.18f, 0.136f, 0.10f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //Update the stage

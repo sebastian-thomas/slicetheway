@@ -1,5 +1,8 @@
 package com.myappstack.gball.actors;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -33,6 +36,8 @@ public class Line extends Actor {
 	public Vector2 stp,edp;
 	
 	ShapeRenderer shapeRenderer;
+	private Texture texture;
+    private Sprite sprite;
 	
 	
 	
@@ -46,8 +51,33 @@ public class Line extends Actor {
 		this.startPos = WorldUtils.viewportToScreen(startPos, camera);
 		this.endPos = WorldUtils.viewportToScreen(endPos, camera);
 		this.shapeRenderer = new ShapeRenderer();	
+		this.texture = new Texture(Gdx.files.internal("jaba.png"));
+		this.sprite = new Sprite(this.texture);
+		setSpriteProps();
 		
 		//setLineEquation();
+	}
+	
+	public void setSpriteProps(){
+		
+		Vector2 a,b;
+		if(startPos.x < endPos.x){
+			a = new Vector2(startPos);
+			b = new Vector2(endPos);
+		}
+		else{
+			a = new Vector2(endPos);
+			b = new Vector2(startPos);
+		}
+		
+		float width = (float)Math.sqrt((a.x-b.x)*(a.x-b.x) + 
+				(a.y-b.y)*(a.y-b.y));
+		float angle =(float)( MathUtils.atan2(b.y-a.y, b.x - a.x) * 180.0d / Math.PI);
+		sprite.setOrigin(0, 0);
+		sprite.setRotation(angle);
+		sprite.setPosition(a.x, a.y);
+		sprite.setSize(width, 20);
+		
 	}
 	
 	public void removeLine(World w){
@@ -154,7 +184,7 @@ public class Line extends Actor {
 		// TODO Auto-generated method stub
 		//super.draw(batch, parentAlpha);
 		//spr.draw(batch);
-		batch.end();
+		/*batch.end();
 		
 		shapeRenderer.begin(ShapeType.Filled);
 	    shapeRenderer.setColor(Color.RED);
@@ -162,6 +192,8 @@ public class Line extends Actor {
 	    shapeRenderer.end();
 	    
 	    batch.begin();
+	    */
+		sprite.draw(batch);
 	}
 	
 }

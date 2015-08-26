@@ -8,17 +8,17 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class BgWhiteRep extends Actor{
+public class BgGameStage extends Actor{
 	
 	private Texture bg;
 	private Vector2 screenDims,margins;
 	private OrthographicCamera camera;
 	
-	public BgWhiteRep(Vector2 screenDims,Vector2 margins, OrthographicCamera camera){
+	public BgGameStage(Vector2 screenDims,Vector2 margins, OrthographicCamera camera){
 		this.screenDims = screenDims;
 		this.margins = margins;
 		this.camera = camera;
-		bg = new Texture(Gdx.files.internal("whitebg.png"));
+		bg = new Texture(Gdx.files.internal("wood.jpg"));
 		bg.setWrap(TextureWrap.Repeat, TextureWrap.Repeat); 
 	}
 

@@ -29,7 +29,7 @@ public class PlayButton extends Actor{
 	
 	public void setPosition(){
 		int x = (int)(screenDims.x/2 - nSpriteDims.x/2);
-		int y = (int)(screenDims.y/2 - nSpriteDims.y/2);
+		int y = (int)(screenDims.y/4 + nSpriteDims.y/2);
 		spr.setPosition(x, y);
 		
 		//Vector2 vPos = WorldUtils.screenToViewport(new Vector2(x,y), camera);

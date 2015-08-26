@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -19,67 +20,81 @@ import com.myappstack.gball.utils.Constants;
 import com.myappstack.gball.utils.WorldUtils;
 
 public class Food extends Actor{
-	
-	
 
-	World world;
-	Body body;
 	OrthographicCamera camera;
+	public static enum FoodType {
+		NORMAL,
+		SPEEDER,
+		GOTHROUGH
+	}
 	
 	private int xVal;
 	private int yVal;
 	private Sprite sprite;
+	private FoodType type;
 	Vector2 dims;
 	
 	Rectangle bounds;
+	Circle bound;
 	Vector2 pos;
 	
-	public Food(World world,OrthographicCamera camera, int x, int y){
+	public Food(World world,OrthographicCamera camera, int x, int y,FoodType type){
 		this.xVal = x;
 		this.yVal = y;
 		this.camera = camera;
+		this.type = type;
 		
 		dims = WorldUtils.viewportToScreen(new Vector2(Constants.FOOD_WIDTH, Constants.FOOD_HEIGHT),camera);
 		pos = WorldUtils.viewportToScreen(new Vector2(x,y), camera);
+		Texture t = null;
+		if(this.type == FoodType.SPEEDER){
+			t = new Texture(Gdx.files.internal("reds.png"));
+		}
+		else if(this.type == FoodType.GOTHROUGH){
+			t = new Texture(Gdx.files.internal("greens.png"));
+		}
+		else{
+			t = new Texture(Gdx.files.internal("foodnormal.png"));
+		}
 		
-		Texture t = new Texture(Gdx.files.internal("reds.png"));
+		
 		sprite = new Sprite(t);
 		sprite.setPosition(pos.x, pos.y);
 		sprite.setSize(dims.x, dims.y);
-		//this.world = world;
-		
-		//makeBody();
-		//Vector2 pos = body.getPosition();
 		bounds = new Rectangle(x,y,Constants.FOOD_WIDTH,Constants.FOOD_HEIGHT);
+		bound = new Circle(x+Constants.FOOD_WIDTH/2, y+Constants.FOOD_WIDTH/2, Constants.FOOD_WIDTH);
 	}
 	
-	public Rectangle getBounds(){
-		return bounds;
+	public Circle getBounds(){
+		return bound;
 	}
 	
-	public void changePos(int xVal, int yVal){
+	public void change(int xVal, int yVal,FoodType type){
 		this.xVal = xVal;
 		this.yVal = yVal;
+		this.type = type;
+		Texture t;
+		if(this.type == FoodType.SPEEDER){
+			t = new Texture(Gdx.files.internal("reds.png"));
+		}
+		else if(this.type == FoodType.GOTHROUGH){
+			t = new Texture(Gdx.files.internal("greens.png"));
+		}
+		else{
+			t = new Texture(Gdx.files.internal("foodnormal.png"));
+		}
 		
+		
+		sprite = new Sprite(t);
 		pos = WorldUtils.viewportToScreen(new Vector2(this.xVal,this.yVal), camera);
 		sprite.setPosition(pos.x, pos.y);
+		sprite.setSize(dims.x, dims.y);
 		bounds.set(this.xVal,this.yVal,Constants.FOOD_WIDTH,Constants.FOOD_HEIGHT);
+		bound.set(this.xVal+Constants.FOOD_WIDTH/2, this.yVal+Constants.FOOD_HEIGHT/2, Constants.FOOD_WIDTH);
 	}
 	
-	public void makeBody(){
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyDef.BodyType.StaticBody;
-		bodyDef.position.set(new Vector2(xVal, yVal));
-		CircleShape shape = new CircleShape();
-		shape.setRadius(Constants.BALL_RADIUS);
-		body = world.createBody(bodyDef);
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.density = 1f; 
-		fixtureDef.friction = 0f;
-		fixtureDef.restitution = 1f; // Make it bounce a little bit
-		Fixture fixture = body.createFixture(fixtureDef);
-		shape.dispose();
+	public FoodType getType(){
+		return this.type;
 	}
 	
 	@Override

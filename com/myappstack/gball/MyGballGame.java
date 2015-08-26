@@ -12,6 +12,12 @@ import com.myappstack.gball.screens.StartScreen;
 public class MyGballGame extends Game {
 	
 	//Screen gScreen;
+	public ActionResolver actionResolver;
+	
+	public  MyGballGame(ActionResolver actionResolver) {
+		// TODO Auto-generated constructor stub
+		this.actionResolver = actionResolver;
+	}
 	
 	@Override
 	public void create () {
