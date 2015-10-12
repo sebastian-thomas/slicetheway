@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.myappstack.gball.utils.Constants;
 import com.myappstack.gball.utils.WorldUtils;
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
@@ -68,6 +69,8 @@ public class BallT extends Actor {
 
 		bounds = new Rectangle(pos.x+Constants.BALL_RADIUS,pos.y+dims.y/2,2*Constants.BALL_RADIUS,2*Constants.BALL_RADIUS);
 		bound  = new Circle(pos.x+Constants.BALL_RADIUS,pos.y+Constants.BALL_RADIUS,Constants.BALL_RADIUS);
+		
+		setBounds(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
 	
 	public void setStateProperties(State state){
@@ -134,9 +137,20 @@ public class BallT extends Actor {
 		pos.add(new Vector2(direction.x* speed, direction.y*speed));
 		//System.out.println(direction.scl(2));
 		posScreen = WorldUtils.viewportToScreen(pos, camera);
-		sprite.setPosition(posScreen.x, posScreen.y);
+		//sprite.setPosition(posScreen.x, posScreen.y);
 		bounds = new Rectangle(pos.x, pos.y, 2*Constants.BALL_RADIUS, 2*Constants.BALL_RADIUS);
 		bound.set(pos.x+Constants.BALL_RADIUS, pos.y+Constants.BALL_RADIUS, Constants.BALL_RADIUS);
+		
+		setPosition(posScreen.x, posScreen.y);
+	}
+	
+	
+
+	@Override
+	protected void positionChanged() {
+		// TODO Auto-generated method stub
+		sprite.setPosition(getX(), getY());
+		super.positionChanged();
 	}
 
 	@Override

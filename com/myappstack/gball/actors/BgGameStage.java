@@ -2,6 +2,8 @@ package com.myappstack.gball.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,7 +20,10 @@ public class BgGameStage extends Actor{
 		this.screenDims = screenDims;
 		this.margins = margins;
 		this.camera = camera;
-		bg = new Texture(Gdx.files.internal("wood.jpg"));
+		Pixmap pixmap = new Pixmap( 64, 64, Format.RGBA8888 );
+		pixmap.setColor( 1, 1, 0, 0f );
+		//bg= new Texture( pixmap );
+		bg = new Texture(Gdx.files.internal("bg1.jpg"));
 		bg.setWrap(TextureWrap.Repeat, TextureWrap.Repeat); 
 	}
 

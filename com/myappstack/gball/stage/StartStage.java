@@ -37,6 +37,8 @@ public class StartStage extends Stage {
 	private StartScreenBackground sbg;
 	private Skin buttonSkin;
 	private TextButton playBtn;
+	private Image gName,clickHereTo;
+	private Image bBall,rBall;
 	
 	
 	private MyGballGame gGame;
@@ -46,31 +48,66 @@ public class StartStage extends Stage {
 		
 		this.gGame = gGame;
 		Gdx.input.setInputProcessor(this);
-
+		setUpUi();	
+	}
+	
+	private void setUpUi(){
 		
 		screenDims = WorldUtils.viewportToScreen(new Vector2(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT),camera);
 		
-		playButton = new PlayButton(screenDims,camera);
-		sbg = new StartScreenBackground(new Vector2(0,0), screenDims);
+		Texture bBallT = new Texture(Gdx.files.internal("b2.png"));
+		Texture rBallT = new Texture(Gdx.files.internal("b1.png"));
+		Texture gNameT = new Texture(Gdx.files.internal("slicetheway.png"));
+		Texture clcickT = new Texture(Gdx.files.internal("clickhereto.png"));
 		
-		Texture btnUp = new Texture(Gdx.files.internal("button-normal.png"));
-		Texture btndown = new Texture(Gdx.files.internal("button-press.png"));
+		bBall = new Image(bBallT);
+		rBall = new Image(rBallT);
+		gName = new Image(gNameT);
+		sbg = new StartScreenBackground(new Vector2(0,0), screenDims);
+		clickHereTo = new Image(clcickT);
+		
+		
+		int commonWidth = (int)screenDims.x/2;
+		int smallWidth = (int) (screenDims.x*0.35f);
+		int xPad = (int)(screenDims.x/2 - commonWidth/2);
+		int xPadSmall = (int)(screenDims.x/2 - smallWidth/2);
+		int gNameHeigh = WorldUtils.getProportionalHeight(commonWidth, new Vector2(gNameT.getWidth(),gNameT.getHeight()));
+		int ballWidth = 3*commonWidth/5;
+		int ballHeight = WorldUtils.getProportionalHeight(ballWidth, new Vector2(bBallT.getWidth(),bBallT.getHeight()));
+		int clickHeight = WorldUtils.getProportionalHeight(smallWidth, new Vector2(clcickT.getWidth(),clcickT.getHeight()));
+		
+		
+		
+		gName.setSize(commonWidth, gNameHeigh);
+		gName.setPosition(xPad, screenDims.y/2);
+		
+		rBall.setSize(ballWidth, ballHeight);
+		rBall.setPosition((int)(screenDims.x/2-0.75*ballWidth), screenDims.y/2+gNameHeigh+1);
+		bBall.setSize(ballWidth, ballHeight);
+		bBall.setPosition((int)(screenDims.x/2-0.25*ballWidth), screenDims.y/2+gNameHeigh+1);
+		
+		
+		//rBall.setPosition(0, 0);
+		//rBall.setSize(100, 100);;
+		
+		Texture btnUp = new Texture(Gdx.files.internal("start.png"));
+		Texture btndown = new Texture(Gdx.files.internal("start.png"));
 		BitmapFont font = new BitmapFont(Gdx.files.internal("tek-hed/nbs.fnt"),
                 Gdx.files.internal("tek-hed/nbs.png"), false);
 		TextButtonStyle tbs = new TextButtonStyle();
 		tbs.up = new Image(btnUp).getDrawable();
 		tbs.down = new Image(btndown).getDrawable();
 		tbs.font = font;
-		
-		float w = screenDims.x/3;
-		float posY,posX;
-		posX = screenDims.x/2 - w/2;
-		posY = screenDims.y/4;
+		int plyBtnHeight = WorldUtils.getProportionalHeight(smallWidth,new Vector2(btnUp.getWidth(), btnUp.getHeight()) );
 		playBtn = new TextButton("", tbs);
-		playBtn.setPosition(posX, posY);
-		playBtn.setWidth(w);
-		playBtn.setHeight(WorldUtils.getProportionalHeight((int)w,new Vector2(btnUp.getWidth(), btnUp.getHeight()) ));
+		playBtn.setPosition(xPadSmall, screenDims.y/8 +plyBtnHeight );
+		playBtn.setWidth(smallWidth);
+		playBtn.setHeight(plyBtnHeight);
 		
+		clickHereTo.setSize(smallWidth, clickHeight);
+		clickHereTo.setPosition(xPadSmall, screenDims.y/8+2*plyBtnHeight);
+		clickHereTo.setColor(1, 1, 1, 0.4f);
+
 		playBtn.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -86,28 +123,13 @@ public class StartStage extends Stage {
 			}
 		});
 		
-		addActor(sbg);		
-		//addActor(playButton);
+		addActor(sbg);
+		addActor(bBall);
+		addActor(rBall);
+		addActor(gName);
+		addActor(clickHereTo);
 		addActor(playBtn);
 		
-		
-		playButton.addListener(new InputListener() {
-		    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-		        System.out.println("down");
-		        changeScreen();
-		        return true;
-		    }
-
-		});
-		
-		if (!gGame.actionResolver.getSignedInGPGS()) {
-			System.out.println("Signing in");
-			gGame.actionResolver.loginGPGS();
-		}
-		else{
-			System.out.println("Already Signedin");
-		}
-		 
 	}
 	
 	

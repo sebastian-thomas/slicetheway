@@ -3,13 +3,19 @@ package com.myappstack.gball.utils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Constants {
-	public static final int APP_WIDTH = 240;
-    public static final int APP_HEIGHT = 400;
+	public static final int APP_WIDTH = 480;
+    public static final int APP_HEIGHT = 800;
     
     public static final int VIEWPORT_WIDTH = 90;
     public static final int VIEWPORT_HEIGHT = 160;
-    public static final int TOP_MARGIN = 4;
-    public static final int MARGIN=4;
+    
+    public static final int GP_WIDTH = 60;
+    public static final int GP_HEIGHT = 8;
+    
+    public static final int scw = 8, sch = 8;
+    
+    public static final int TOP_MARGIN = 2;
+    public static final int MARGIN=2;
     
     public static final int BALL_RADIUS = 5;
     public static final float BALL_SPEED = 1.4f;

@@ -51,7 +51,7 @@ public class Line extends Actor {
 		this.startPos = WorldUtils.viewportToScreen(startPos, camera);
 		this.endPos = WorldUtils.viewportToScreen(endPos, camera);
 		this.shapeRenderer = new ShapeRenderer();	
-		this.texture = new Texture(Gdx.files.internal("jaba.png"));
+		this.texture = new Texture(Gdx.files.internal("line.png"));
 		this.sprite = new Sprite(this.texture);
 		setSpriteProps();
 		

@@ -1,9 +1,12 @@
 package com.myappstack.gball.stage;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -12,11 +15,13 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleByAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -54,8 +59,8 @@ public class GameStage extends Stage {
 
 	private Line line;
 	private Food food;
-	private BallT blueBall;
-	private BallT redBall;
+	private Ball blueBall;
+	private Ball redBall;
 	private BgGameStage bgWood;
 	
 	private Vector2 margins,screenDims;
@@ -69,6 +74,11 @@ public class GameStage extends Stage {
 	private Button pReplay;
 	private Button pMenu;
 	private Label pScore;
+	
+	private ParticleEffect redExpo, blueExpo;
+	private Sound breakBallSound;
+	private Sound pointSound;
+	private boolean drawDestroyPeffect;
 
 	private final float TIME_STEP = 1 / 300f;
 	private float accumulator = 0f;
@@ -90,6 +100,19 @@ public class GameStage extends Stage {
     	setupScore();
     	Gdx.input.setInputProcessor(this);
         renderer = new Box2DDebugRenderer();
+        
+        breakBallSound = Gdx.audio.newSound(Gdx.files.internal("sounds/glass_break.ogg"));
+        pointSound = Gdx.audio.newSound(Gdx.files.internal("sounds/point.mp3"));
+        
+        redExpo = new ParticleEffect();
+        redExpo.load(Gdx.files.internal("effects/expored.p"), Gdx.files.internal("effects"));
+        redExpo.allowCompletion();
+        
+        blueExpo = new ParticleEffect();
+        blueExpo.load(Gdx.files.internal("effects/expoblue.p"), Gdx.files.internal("effects"));
+        blueExpo.allowCompletion();
+        
+        drawDestroyPeffect = false;
         
         touchStart = touchEnd = null;
     }
@@ -115,93 +138,94 @@ public class GameStage extends Stage {
 		handleLineCollision();
 		//blueBall.getBounds().overlaps(redBall.getBounds())
 		if(blueBall.collidedWith(redBall.getPos())){
-			if(blueBall.getState() == BallT.State.GOTHROUGH || redBall.getState() == BallT.State.GOTHROUGH){
+			if(blueBall.getState() == Ball.State.GOTHROUGH || redBall.getState() == Ball.State.GOTHROUGH){
 				System.out.println("not out : go through");
 			}
 			else{
 				System.out.println("game over");
-				this.gOver = true;
+				//this.gOver = true;
 				showGameOverPoupUp();
 				//this.gballGame.setScreen(new GameOverScreen(gballGame,score));
 			}
 			
 		}
-
 		else if (blueBall.getBounds().overlaps(food.getBounds())) {
+			if(food.getType() == FoodType.BLUE){
+				score++;
+				scoreLabel.setText(score.toString());
+				blueBall.gotFoodAnimation();
+				pointSound.play(1f);
+			}
+			else{
+				redExpo.setPosition(food.pos.x, food.pos.y);
+				redExpo.update(delta);
+				redExpo.start();
+				breakBallSound.play(1.0f);
+			}
 			System.out.println("Collided");
 			int newXpos = MathUtils.random(Constants.MARGIN+1, Constants.VIEWPORT_WIDTH
 					- Constants.MARGIN- Constants.FOOD_WIDTH - 1);
 			int newYpos = MathUtils.random(Constants.MARGIN +1, Constants.VIEWPORT_HEIGHT
 					- Constants.FOOD_HEIGHT- Constants.TOP_MARGIN - 1);
-			if(food.getType() == Food.FoodType.SPEEDER){
-				blueBall.setStateProperties(BallT.State.SPEED);
-			}
-			else if(food.getType() == Food.FoodType.GOTHROUGH){
-				blueBall.setStateProperties(BallT.State.GOTHROUGH);
-			}
 			
-			/*if(pm.powerup()){
-				food.change(newXpos, newYpos,FoodType.SPEEDER);
-			}
-			else{
-				food.change(newXpos, newYpos,FoodType.NORMAL);
-			}*/
-			food.change(newXpos, newYpos,FoodType.NORMAL);
-			score++;
-			scoreLabel.setText("Score : "+score.toString());
+			food.change(newXpos, newYpos,FoodType.RED);
+			
 
 		}
 		else if (redBall.getBounds().overlaps(food.getBounds())) {
+			if(food.getType() == FoodType.RED){
+				score++;
+				scoreLabel.setText(score.toString());
+				redBall.gotFoodAnimation();
+				pointSound.play(1f);
+			}
+			else{
+				blueExpo.setPosition(food.pos.x, food.pos.y);
+				blueExpo.update(delta);
+				blueExpo.start();
+				breakBallSound.play(1.0f);
+			}
 			System.out.println("Collided");
 			int newXpos = MathUtils.random(Constants.MARGIN + 1, Constants.VIEWPORT_WIDTH
 					- Constants.FOOD_WIDTH - Constants.MARGIN - 1);
 			int newYpos = MathUtils.random(Constants.MARGIN +1, Constants.VIEWPORT_HEIGHT
 					- Constants.FOOD_HEIGHT - Constants.TOP_MARGIN - 1);
 			
-			if(food.getType() == Food.FoodType.SPEEDER){
-				redBall.setStateProperties(BallT.State.SPEED);
-			}
-			else if(food.getType() == Food.FoodType.GOTHROUGH){
-				redBall.setStateProperties(BallT.State.GOTHROUGH);
-			}
 			
-			/*if(pm.powerup()){
-				food.change(newXpos, newYpos,FoodType.GOTHROUGH);
-			}
-			else{
-				food.change(newXpos, newYpos,FoodType.NORMAL);
-			}*/
-			food.change(newXpos, newYpos,FoodType.NORMAL);
-			score++;
-			scoreLabel.setText("Score : "+score.toString());
+			food.change(newXpos, newYpos,FoodType.BLUE);
 
 		}
-
 	}
 
 	private void setupScore() {
 		score = 0;
-		Vector2 dims = WorldUtils.viewportToScreen(new Vector2(Constants.VIEWPORT_WIDTH-2*Constants.MARGIN,Constants.GP_BOARD), camera);
-		Vector2 pos = WorldUtils.viewportToScreen(new Vector2(Constants.MARGIN,Constants.VIEWPORT_HEIGHT -(Constants.TOP_MARGIN+Constants.GP_BOARD) ), camera);
+		Vector2 dims = WorldUtils.viewportToScreen(new Vector2(Constants.VIEWPORT_WIDTH-3*Constants.MARGIN,Constants.GP_BOARD), camera);
+		Vector2 pos = WorldUtils.viewportToScreen(new Vector2(Constants.MARGIN,Constants.VIEWPORT_HEIGHT -(Constants.GP_BOARD + Constants.MARGIN+1) ), camera);
+		
+		float fontScale = (dims.y-10)/64;
 		
 		BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/hobostd.fnt"),
                 Gdx.files.internal("fonts/hobostd.png"), false);
 		LabelStyle style = new LabelStyle();
 		style.font = font;
-		scoreLabel = new Label("Score : "+score.toString(), style);
-		scoreLabel.setText("Score : "+score.toString());
+		scoreLabel = new Label(score.toString(), style);
+		scoreLabel.setText(score.toString());
+		scoreLabel.setFontScale(fontScale);
+		scoreLabel.setColor(Color.WHITE);
+		scoreLabel.setAlignment(Align.right);
 		
 		modeLabel = new Label("Mode : Normal",style);
 		modeLabel.setText("Mode : Normal");
+		modeLabel.setFontScale(fontScale);
+		modeLabel.setColor(Color.WHITE);
 		
 		table = new Table();
-		//table.setFillParent(true);
-		table.setDebug(true);
+		//table.setDebug(true);
 		table.setSize(dims.x, dims.y);
 		table.setPosition(pos.x, pos.y);
 		//table.center();
-		table.add(scoreLabel).expandX().height(dims.y);
-		table.add(modeLabel).expandX().height(dims.y);
+		table.add(scoreLabel).expandX().align(Align.right).height(dims.y);
+		//table.add(modeLabel).expandX().height(dims.y);
 		
 		addActor(table);
 	}
@@ -272,11 +296,13 @@ public class GameStage extends Stage {
 		}
 	}
 	
+	
+	
 	private void showGameOverPoupUp(){
 		Vector2 screenDims = WorldUtils.viewportToScreen(new Vector2(Constants.VIEWPORT_WIDTH, 
 				Constants.VIEWPORT_HEIGHT),camera);
 		
-		Texture tPScoreBg = new Texture(Gdx.files.internal("scorebg.png"));
+		Texture tPScoreBg = new Texture(Gdx.files.internal("whitebg.png"));
 		Texture tReplay = new Texture(Gdx.files.internal("score_replay.png"));
 		Texture tMenu = new Texture(Gdx.files.internal("score_menu.png"));
 		BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/hobostd.fnt"),
@@ -320,17 +346,18 @@ public class GameStage extends Stage {
 		pTable.row();
 		pTable.add(pOptionsTable);
 		pTable.setDebug(true);
+		pTable.setPosition(screenDims.x/2 - sq/2, screenDims.y/2 - sq/2);
 		addActor(pTable);
 		
 		//addActor(pScoreBg);
 		
 		
 		//pTable.addAction(Actions.sequence(Actions.alpha(0f),Actions.fadeIn(4f)));
-		pTable.addAction(
+		/*pTable.addAction(
 				Actions.sequence(
 						Actions.moveTo(screenDims.x/2 - sq/2, screenDims.y/2 - sq/2 , 0.8f)
 						)
-		);
+		);*/
 		
 		pReplay.addListener(new InputListener(){
 			 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -348,6 +375,9 @@ public class GameStage extends Stage {
 			    }
 		});
 		
+		pReplay.addAction(Actions.sequence(Actions.alpha(0f),Actions.fadeIn(3f)));
+		pMenu.addAction(Actions.sequence(Actions.alpha(0f),Actions.fadeIn(3f)));
+		
 	}
 	
 	private void goToMainMenu(){
@@ -358,17 +388,20 @@ public class GameStage extends Stage {
 		this.gballGame.setScreen(new GameScreen(this.gballGame));
 	}
 	
-	
+	 
 	private void setupFood(int x, int y) {
-		food = new Food(world, camera, x, y,Food.FoodType.NORMAL);
+		food = new Food(world, camera, x, y,Food.FoodType.BLUE);
 		addActor(food);	
 	}
 
 	private void setupBall() {
-		blueBall = new BallT(camera,margins, new Vector2(1,1), Constants.FOOD_WIDTH+1, Constants.FOOD_HEIGHT+1,"b2.png");
-		redBall = new BallT(camera,margins, new Vector2(1,-1), Constants.FOOD_WIDTH+1, Constants.VIEWPORT_HEIGHT-Constants.FOOD_HEIGHT-1,"b1.png");
-		addActor(blueBall);
+		Texture tBlue = new Texture(Gdx.files.internal("b2.png"));
+		Texture tRed = new Texture(Gdx.files.internal("b1.png"));
+		blueBall = new Ball(tBlue,camera,margins, new Vector2(1,1), Constants.FOOD_WIDTH+1, Constants.FOOD_HEIGHT+Constants.MARGIN);
+		redBall = new Ball(tRed,camera,margins, new Vector2(1,-1), Constants.FOOD_WIDTH+1, Constants.VIEWPORT_HEIGHT-Constants.FOOD_HEIGHT-Constants.MARGIN);
+		
 		addActor(redBall);
+		addActor(blueBall);
 	}
 
 
@@ -391,8 +424,15 @@ public class GameStage extends Stage {
 	@Override
 	public void draw() {
 		super.draw();
+		getBatch().begin();
+		blueExpo.update(Gdx.graphics.getDeltaTime());
+		blueExpo.draw(getBatch());
+		
+		redExpo.update(Gdx.graphics.getDeltaTime());
+		redExpo.draw(getBatch());
+		
+		getBatch().end();
 		//renderer.render(world, camera.combined);
-
 	}
 
 	public Vector2 screenToViewport(Vector2 v) {

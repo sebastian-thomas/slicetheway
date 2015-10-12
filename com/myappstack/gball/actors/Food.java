@@ -23,9 +23,8 @@ public class Food extends Actor{
 
 	OrthographicCamera camera;
 	public static enum FoodType {
-		NORMAL,
-		SPEEDER,
-		GOTHROUGH
+		RED,
+		BLUE
 	}
 	
 	private int xVal;
@@ -36,7 +35,7 @@ public class Food extends Actor{
 	
 	Rectangle bounds;
 	Circle bound;
-	Vector2 pos;
+	public Vector2 pos;
 	
 	public Food(World world,OrthographicCamera camera, int x, int y,FoodType type){
 		this.xVal = x;
@@ -47,15 +46,13 @@ public class Food extends Actor{
 		dims = WorldUtils.viewportToScreen(new Vector2(Constants.FOOD_WIDTH, Constants.FOOD_HEIGHT),camera);
 		pos = WorldUtils.viewportToScreen(new Vector2(x,y), camera);
 		Texture t = null;
-		if(this.type == FoodType.SPEEDER){
+		if(this.type == FoodType.RED){
 			t = new Texture(Gdx.files.internal("reds.png"));
 		}
-		else if(this.type == FoodType.GOTHROUGH){
-			t = new Texture(Gdx.files.internal("greens.png"));
+		else {
+			t = new Texture(Gdx.files.internal("blues.png"));
 		}
-		else{
-			t = new Texture(Gdx.files.internal("foodnormal.png"));
-		}
+		
 		
 		
 		sprite = new Sprite(t);
@@ -74,16 +71,12 @@ public class Food extends Actor{
 		this.yVal = yVal;
 		this.type = type;
 		Texture t;
-		if(this.type == FoodType.SPEEDER){
+		if(this.type == FoodType.RED){
 			t = new Texture(Gdx.files.internal("reds.png"));
 		}
-		else if(this.type == FoodType.GOTHROUGH){
-			t = new Texture(Gdx.files.internal("greens.png"));
-		}
 		else{
-			t = new Texture(Gdx.files.internal("foodnormal.png"));
+			t = new Texture(Gdx.files.internal("blues.png"));
 		}
-		
 		
 		sprite = new Sprite(t);
 		pos = WorldUtils.viewportToScreen(new Vector2(this.xVal,this.yVal), camera);
